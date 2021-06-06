@@ -25,40 +25,42 @@ public class MobileSearch {
 		// TODO Auto-generated method stub
 
 	System.setProperty("webdriver.chrome.driver", "chromedriver");
+
 		WebDriver driver = new ChromeDriver();
 		driver.get("https://www.amazon.in/");
 		driver.manage().window().maximize();
 		driver.manage().timeouts().implicitlyWait(50000, TimeUnit.MILLISECONDS);
 		
 		 try {
-	          
-	            Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/amazon","root","root");
+
+			//JDBC Connection
+			 	Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/amazon","root","root");
 	            Statement stmt = con.createStatement();  
 	            ResultSet rs = stmt.executeQuery("select * from search"); 
 	            
-	           
+	        //Select category  
 	        WebElement AllCategoryDropdown = driver.findElement(By.xpath("//select[@title ='Search in']"));
 	    	Select category = new Select(AllCategoryDropdown) ;
 	    	
+	    	//Search
 	    	WebElement searchField = driver.findElement(By.xpath("//input[@name ='field-keywords']"));
-	    	
-	    	
-	    	     
+	     	     
 	    	while(rs.next()) {
                 String cat = rs.getNString(1);
-                category.selectByVisibleText(cat);
+                category.selectByVisibleText(cat); //pass the extracted value from db to the category locator
                 
                 String searchValue = rs.getString(2);
-                searchField.sendKeys(searchValue);
-               
+                searchField.sendKeys(searchValue); // pass the extracted value from db to the search
 	    	}        
 	        
-	    	WebElement submitValue = driver.findElement(By.xpath("//input[@type ='submit']"));
+	    	WebElement submitValue = driver.findElement(By.xpath("//input[@type ='submit']")); //click on search
             submitValue.click();
 	    	
+            //get the total result count
 	    	List<WebElement> resultList = driver.findElements(By.xpath("//*[@data-component-type='s-search-result']"));
 	    	System.out.println("Total search count : " + resultList.size());
 	   
+	    	//Assert the result
 	    	WebElement resultMsg = driver.findElement(By.xpath("//*[contains(text(), '1-24')]"));
 	    	String assertionMsg = resultMsg.getText();
 	    	String msg = "1-24 of over 60,000 results for";
@@ -73,16 +75,15 @@ public class MobileSearch {
 	    		System.out.println("Assertion Failed");
 	    	}
 	    	
+	    	//get the name of the results
 	    	List<WebElement> resultName = driver.findElements(By.xpath("//span[@class='a-size-medium a-color-base a-text-normal']"));
-	    	
 	    	
 	    	for(int i=0;i <resultList.size();i++)  	
 		    {
 	    		String mobileName = resultName.get(i).getText();
 	    		System.out.println("Mobile name : " + mobileName);
   }		  
-		    
-
+		//Take the screenshot of the result
     	TakesScreenshot TsObj = (TakesScreenshot)driver;
     	File myFile = TsObj.getScreenshotAs(OutputType.FILE);
     	

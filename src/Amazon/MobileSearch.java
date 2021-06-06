@@ -58,18 +58,43 @@ public class MobileSearch {
 	    	
 	    	List<WebElement> resultList = driver.findElements(By.xpath("//*[@data-component-type='s-search-result']"));
 	    	System.out.println("Total search count : " + resultList.size());
+	   
+	    	WebElement resultMsg = driver.findElement(By.xpath("//*[contains(text(), '1-24')]"));
+	    	String assertionMsg = resultMsg.getText();
+	    	String msg = "1-24 of over 60,000 results for";
 	    	
-	    	TakesScreenshot TsObj = (TakesScreenshot)driver;
-	    	File myFile = TsObj.getScreenshotAs(OutputType.FILE);
-	    	
-	    	try {	
-	    		FileUtils.copyFile(myFile,  new File("searchresult.png"));
+	    	if(assertionMsg.equals(msg))
+	    	{
+	    		System.out.println("Assertion Pass");
 	    	}
-	    	catch (IOException e) {
-	             // TODO Auto-generated catch block
-	             e.printStackTrace();
-	         }
-	        	
+	    	
+	    	else {
+	    		
+	    		System.out.println("Assertion Failed");
+	    	}
+	    	
+	    	List<WebElement> resultName = driver.findElements(By.xpath("//span[@class='a-size-medium a-color-base a-text-normal']"));
+	    	
+	    	
+	    	for(int i=0;i <resultList.size();i++)  	
+		    {
+	    		String mobileName = resultName.get(i).getText();
+	    		System.out.println("Mobile name : " + mobileName);
+  }		  
+		    
+
+    	TakesScreenshot TsObj = (TakesScreenshot)driver;
+    	File myFile = TsObj.getScreenshotAs(OutputType.FILE);
+    	
+    	
+    	try {	
+    		FileUtils.copyFile(myFile,  new File("searchresult.png"));
+    	}
+    	catch (IOException e) {
+             // TODO Auto-generated catch block
+             e.printStackTrace();
+         }
+    	
 	    	driver.close();
 	    	
 		 } catch (SQLException e) {
